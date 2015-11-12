@@ -1,5 +1,7 @@
 package kata04
 
+import java.io.File
+
 import scala.io.Source
 
 /**
@@ -8,9 +10,9 @@ import scala.io.Source
   * Skips the header rows.
   * Created by dskrvk on 11/11/15.
   */
-class DsvFileParser(filePath: String, numHeaderRows: Int, separator: Char) {
+class DsvFileParser(file: File, numHeaderRows: Int, separator: Char) {
   def parse() = {
-    Source.fromFile(filePath).getLines()
+    Source.fromFile(file).getLines()
       .drop(numHeaderRows)
       .map(_.split(separator)
             .filterNot(_.isEmpty))
