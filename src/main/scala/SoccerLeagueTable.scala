@@ -9,22 +9,15 @@ object SoccerLeagueTable
   val resultsTuples = new DsvFileParser(args(0), 1, ' ')
     .parse()
     .flatMap({
-        case Array(_, team, _, _, _, _, wins, _, losses, _) =>
-          (team, Try(Integer.parseInt(wins)), Try(Integer.parseInt(losses))) match {
-            case (t, Success(w), Success(l)) => Some((t, w - l))
-            case _ => None
-          }
-        case _ => None
+      case Array(_, team, _, _, _, _, wins, _, losses, _) =>
+        (team, Try(Integer.parseInt(wins)), Try(Integer.parseInt(losses))) match {
+          case (t, Success(w), Success(l)) => Some((t, w - l))
+          case _ => None
+        }
+      case _ => None
     })
 
-  val first = resultsTuples.next()
-  val teamWithSmallestSpread =
-    resultsTuples.foldLeft(first) { (smallestSpreadTuple, teamTuple) =>
-      if (smallestSpreadTuple._2 < teamTuple._2)
-        smallestSpreadTuple
-      else
-        teamTuple
-    }
+  val teamWithSmallestSpread = resultsTuples.minBy({case (team, spread) => spread})
 
   println(s"The team with the smallest goal spread is ${teamWithSmallestSpread._1}")
 }

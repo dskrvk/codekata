@@ -6,26 +6,18 @@ import scala.util.{Success, Try}
 object WeatherData
   extends App {
 
-  val daySpreadTuples =
-    new DsvFileParser(args(0), 2, ' ')
-      .parse()
-      .flatMap({
-        case Array(week, max, min, _*) =>
-          (week, Try(Integer.parseInt(max)), Try(Integer.parseInt(min))) match {
-            case (w, Success(mx), Success(mn)) => Some((w, mx - mn))
-            case _ => None
-          }
-        case _ => None
-      })
+  val daySpreadTuples = new DsvFileParser(args(0), 2, ' ')
+    .parse()
+    .flatMap({
+      case Array(week, max, min, _*) =>
+        (week, Try(Integer.parseInt(max)), Try(Integer.parseInt(min))) match {
+          case (w, Success(mx), Success(mn)) => Some((w, mx - mn))
+          case _ => None
+        }
+      case _ => None
+    })
 
-  val first = daySpreadTuples.next()
-  val dayWithSmallestSpread =
-      daySpreadTuples.foldLeft(first) { (smallestSpreadTuple, dayTuple) =>
-        if (smallestSpreadTuple._2 < dayTuple._2)
-          smallestSpreadTuple
-        else
-          dayTuple
-      }
+  val dayWithSmallestSpread = daySpreadTuples.minBy({case (week, spread) => spread})
 
   println(s"The day with the smallest temperature spread is ${dayWithSmallestSpread._1}")
 }
