@@ -1,3 +1,5 @@
+package kata04
+
 import scala.util.{Success, Try}
 
 /**
