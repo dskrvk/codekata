@@ -1,4 +1,3 @@
-import scala.io.Source
 import scala.util.{Success, Try}
 
 /**
@@ -8,14 +7,14 @@ object WeatherData
   extends App {
 
   val daySpreadTuples =
-    Source.fromFile(args(0)).getLines()
-      .drop(2) // skip header lines
-      .map(_.split(' ')
-            .filterNot(_.isEmpty)
-            .take(3) // only need first 3 columns
-            .map(s => Try(Integer.parseInt(s))))
-      .flatMap(_ match {
-        case Array(Success(n), Success(max), Success(min)) => Some((n, max - min))
+    new DsvFileParser(args(0), 2, ' ')
+      .parse()
+      .flatMap({
+        case Array(week, max, min, _*) =>
+          (week, Try(Integer.parseInt(max)), Try(Integer.parseInt(min))) match {
+            case (w, Success(mx), Success(mn)) => Some((w, mx - mn))
+            case _ => None
+          }
         case _ => None
       })
 
